@@ -103,6 +103,7 @@ import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayMode;
 import org.spongepowered.api.service.economy.account.AccountDeletionResultType;
 import org.spongepowered.api.service.economy.transaction.TransactionType;
+import org.spongepowered.api.service.placeholder.PlaceholderParser;
 import org.spongepowered.api.statistic.Statistic;
 import org.spongepowered.api.statistic.StatisticType;
 import org.spongepowered.api.text.chat.ChatType;
@@ -175,14 +176,15 @@ import org.spongepowered.common.registry.type.advancement.*;
 import org.spongepowered.common.registry.type.block.*;
 import org.spongepowered.common.registry.type.boss.*;
 import org.spongepowered.common.registry.type.data.*;
-import org.spongepowered.common.registry.type.economy.AccountDeletionResultTypeRegistryModule;
-import org.spongepowered.common.registry.type.economy.TransactionTypeRegistryModule;
+import org.spongepowered.common.registry.type.service.economy.AccountDeletionResultTypeRegistryModule;
+import org.spongepowered.common.registry.type.service.economy.TransactionTypeRegistryModule;
 import org.spongepowered.common.registry.type.effect.*;
 import org.spongepowered.common.registry.type.entity.*;
 import org.spongepowered.common.registry.type.event.*;
 import org.spongepowered.common.registry.type.extra.FluidTypeRegistryModule;
 import org.spongepowered.common.registry.type.item.*;
 import org.spongepowered.common.registry.type.scoreboard.*;
+import org.spongepowered.common.registry.type.service.placeholder.PlaceholderParserRegistryModule;
 import org.spongepowered.common.registry.type.statistic.StatisticRegistryModule;
 import org.spongepowered.common.registry.type.statistic.StatisticTypeRegistryModule;
 import org.spongepowered.common.registry.type.text.*;
@@ -465,6 +467,7 @@ public final class CommonModuleRegistry {
                 .registerModule((Class<DataRegistration<?, ?>>) (Class<?>) DataRegistration.class, SpongeManipulatorRegistry.getInstance())
                 .registerModule(new ItemStackComparatorRegistryModule())
                 .registerModule(HandPreference.class, HandPreferenceRegistryModule.getInstance())
+                .registerModule(PlaceholderParser.class, new PlaceholderParserRegistryModule())
 
                 // Miscellaneous Registries
                 .registerModule(DungeonMobRegistryModule.getInstance())
