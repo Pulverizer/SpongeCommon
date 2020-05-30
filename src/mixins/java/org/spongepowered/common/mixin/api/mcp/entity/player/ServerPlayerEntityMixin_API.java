@@ -75,10 +75,8 @@ import org.spongepowered.api.text.chat.ChatVisibility;
 import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.text.translation.Translation;
 import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBorder;
 import org.spongepowered.api.world.server.ServerWorld;
-import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
@@ -89,6 +87,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.common.SpongeImpl;
+import org.spongepowered.common.accessor.network.play.server.SChangeBlockPacketAccessor;
 import org.spongepowered.common.bridge.advancements.AdvancementBridge;
 import org.spongepowered.common.bridge.advancements.PlayerAdvancementsBridge;
 import org.spongepowered.common.bridge.api.text.title.TitleBridge;
@@ -99,7 +98,6 @@ import org.spongepowered.common.bridge.network.play.server.SSendResourcePackPack
 import org.spongepowered.common.bridge.scoreboard.ServerScoreboardBridge;
 import org.spongepowered.common.effect.record.SpongeRecordType;
 import org.spongepowered.common.entity.player.tab.SpongeTabList;
-import org.spongepowered.common.accessor.network.play.server.SChangeBlockPacketAccessor;
 import org.spongepowered.common.text.SpongeTexts;
 import org.spongepowered.common.util.BookFaker;
 import org.spongepowered.common.util.LocaleCache;
@@ -109,16 +107,17 @@ import org.spongepowered.common.world.storage.SpongePlayerDataHandler;
 import org.spongepowered.math.vector.Vector3d;
 import org.spongepowered.math.vector.Vector3i;
 
-import javax.annotation.Nullable;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 @Mixin(ServerPlayerEntity.class)
 @Implements(@Interface(iface = Player.class, prefix = "player$"))
@@ -199,7 +198,7 @@ public abstract class ServerPlayerEntityMixin_API extends PlayerEntityMixin_API 
             // Don't bother sending messages to fake players
             return;
         }
-        BookFaker.fakeBookView(bookView, this);
+        BookFaker.fakeBookView(bookView, Collections.singletonList(this));
     }
 
     @Override
