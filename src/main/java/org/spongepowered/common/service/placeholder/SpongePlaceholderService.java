@@ -24,16 +24,12 @@
  */
 package org.spongepowered.common.service.placeholder;
 
-import org.spongepowered.api.command.source.ConsoleSource;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.placeholder.PlaceholderParser;
 import org.spongepowered.api.service.placeholder.PlaceholderService;
 import org.spongepowered.api.service.placeholder.PlaceholderText;
-import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.common.SpongeImpl;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
@@ -46,8 +42,13 @@ public class SpongePlaceholderService implements PlaceholderService {
     }
 
     @Override
+    public Optional<PlaceholderText> parse(String token, Supplier<Object> associatedObjectSupplier) {
+        return this.parse(token, null, associatedObjectSupplier);
+    }
+
+    @Override
     public Optional<PlaceholderText> parse(String token, Object associatedObject) {
-        return this.parseInternal(token, null, this.createMessageReceiverSupplier(associatedObject));
+        return this.parseInternal(token, null, associatedObject);
     }
 
     @Override
@@ -57,7 +58,12 @@ public class SpongePlaceholderService implements PlaceholderService {
 
     @Override
     public Optional<PlaceholderText> parse(String token, String argumentString, Object associatedObject) {
-        return this.parseInternal(token, argumentString, this.createMessageReceiverSupplier(associatedObject));
+        return this.parseInternal(token, argumentString, associatedObject);
+    }
+
+    @Override
+    public Optional<PlaceholderText> parse(String token, String argumentString, Supplier<Object> associatedObjectSupplier) {
+        return this.parseInternal(token, argumentString, associatedObjectSupplier);
     }
 
     @Override
@@ -70,20 +76,14 @@ public class SpongePlaceholderService implements PlaceholderService {
         return new SpongePlaceholderTextBuilder();
     }
 
-    private Supplier<Object> createMessageReceiverSupplier(final Object receiver) {
-        if (receiver instanceof ConsoleSource) {
-            return () -> (ConsoleSource) SpongeImpl.getServer();
-        } else if (receiver instanceof Player) {
-            final UUID uuid = ((Player) receiver).getUniqueId();
-            return () -> SpongeImpl.getGame().getServer().getPlayer(uuid).orElse(null);
-        }
-
-        return () -> receiver;
-    }
-
-    private Optional<PlaceholderText> parseInternal(String token, @Nullable String argumentString, @Nullable Supplier<Object> messageReceiver) {
+    private Optional<PlaceholderText> parseInternal(String token, @Nullable String argumentString, @Nullable Object messageReceiver) {
         return getParser(token)
                 .map(x -> placeholderBuilder().setAssociatedObject(messageReceiver).setArgumentString(argumentString).setParser(x).build());
+    }
+
+    private Optional<PlaceholderText> parseInternal(String token, @Nullable String argumentString, @Nullable Supplier<Object> supplier) {
+        return getParser(token)
+                .map(x -> placeholderBuilder().setAssociatedObject(supplier).setArgumentString(argumentString).setParser(x).build());
     }
 
 }

@@ -26,10 +26,15 @@ package org.spongepowered.common.service.placeholder;
 
 import com.google.common.base.Preconditions;
 import org.spongepowered.api.command.source.ConsoleSource;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.placeholder.PlaceholderParser;
 import org.spongepowered.api.service.placeholder.PlaceholderText;
+import org.spongepowered.api.world.World;
+import org.spongepowered.common.SpongeImpl;
 
+import java.lang.ref.WeakReference;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
@@ -47,15 +52,30 @@ public class SpongePlaceholderTextBuilder implements PlaceholderText.Builder {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public PlaceholderText.Builder setAssociatedObject(@Nullable Object associatedObject) {
         if (associatedObject == null) {
             this.associatedObjectSupplier = null;
+        } else if (associatedObject instanceof Supplier) {
+            return setAssociatedObject((Supplier<Object>) associatedObject);
+        } else if (associatedObject instanceof ConsoleSource) {
+            this.associatedObjectSupplier = () -> (ConsoleSource) SpongeImpl.getServer();
         } else if (associatedObject instanceof Player) {
             return this.setAssociatedObject((Player) associatedObject);
+        } else if (associatedObject instanceof World) {
+            final UUID uuid = ((World) associatedObject).getUniqueId();
+            this.associatedObjectSupplier = () -> SpongeImpl.getGame().getServer().getWorld(uuid).orElse(null);
+        } else if (associatedObject instanceof Entity) {
+            final Entity entity = ((Entity) associatedObject);
+            final UUID worldUuid = entity.getWorld().getUniqueId();
+            final UUID entityUuid = ((Entity) associatedObject).getUniqueId();
+            this.associatedObjectSupplier =
+                    () -> SpongeImpl.getGame().getServer().getWorld(worldUuid).flatMap(x -> x.getEntity(entityUuid)).orElse(null);
         } else {
-            this.associatedObjectSupplier = () -> associatedObject;
+            // We create a weak reference here so we don't hold on to game objects.
+            final WeakReference<Object> objectWeakReference = new WeakReference<>(associatedObject);
+            this.associatedObjectSupplier = objectWeakReference::get;
         }
-
         return this;
     }
 

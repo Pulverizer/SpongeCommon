@@ -25,15 +25,16 @@
 package org.spongepowered.common.registry.type.service.placeholder;
 
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.registry.util.RegisterCatalog;
 import org.spongepowered.api.service.placeholder.PlaceholderParser;
 import org.spongepowered.api.service.placeholder.PlaceholderParsers;
-import org.spongepowered.api.service.placeholder.PlaceholderText;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Locatable;
 import org.spongepowered.common.SpongeImpl;
 import org.spongepowered.common.registry.SpongeAdditionalCatalogRegistryModule;
 import org.spongepowered.common.registry.type.AbstractPrefixAlternateCatalogTypeRegistryModule;
+import org.spongepowered.common.service.placeholder.SpongePlaceholderParserBuilder;
 
 @RegisterCatalog(PlaceholderParsers.class)
 public class PlaceholderParserRegistryModule
@@ -59,44 +60,25 @@ public class PlaceholderParserRegistryModule
 
     @Override
     public void registerDefaults() {
-        register(new PlaceholderParser() {
-            @Override
-            public Text parse(PlaceholderText placeholderText) {
-                return placeholderText.getAssociatedObject()
+        final PluginContainer pluginContainer = SpongeImpl.getSpongePlugin();
+        register(new SpongePlaceholderParserBuilder()
+                .plugin(pluginContainer)
+                .id("name")
+                .name("Name")
+                .parser(placeholderText -> placeholderText.getAssociatedObject()
                         .filter(x -> x instanceof CommandSource)
                         .<Text>map(x -> Text.of(((CommandSource) x).getName()))
-                        .orElse(Text.EMPTY);
-            }
-
-            @Override
-            public String getId() {
-                return "sponge:name";
-            }
-
-            @Override
-            public String getName() {
-                return "Name";
-            }
-        });
-        register(new PlaceholderParser() {
-            @Override
-            public Text parse(PlaceholderText placeholderText) {
-                return Text.of(
+                        .orElse(Text.EMPTY))
+                .build());
+        register(new SpongePlaceholderParserBuilder()
+                .plugin(pluginContainer)
+                .id("current_world")
+                .name("Current (or default) world")
+                .parser(placeholderText -> Text.of(
                         placeholderText.getAssociatedObject()
                                 .filter(x -> x instanceof Locatable)
                                 .map(x -> ((Locatable) x).getWorld().getName())
-                                .orElseGet(() -> SpongeImpl.getServer().getEntityWorld().getWorldInfo().getWorldName()));
-            }
-
-            @Override
-            public String getId() {
-                return "sponge:current_world";
-            }
-
-            @Override
-            public String getName() {
-                return "Current (or default) world";
-            }
-        });
+                                .orElseGet(() -> SpongeImpl.getServer().getEntityWorld().getWorldInfo().getWorldName())))
+                .build());
     }
 }
