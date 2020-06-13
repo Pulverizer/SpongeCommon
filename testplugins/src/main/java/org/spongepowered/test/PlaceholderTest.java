@@ -34,9 +34,9 @@ import org.spongepowered.api.event.game.GameRegistryEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.service.placeholder.PlaceholderParser;
-import org.spongepowered.api.service.placeholder.PlaceholderService;
-import org.spongepowered.api.service.placeholder.PlaceholderText;
+import org.spongepowered.api.text.placeholder.PlaceholderContext;
+import org.spongepowered.api.text.placeholder.PlaceholderParser;
+import org.spongepowered.api.text.placeholder.PlaceholderText;
 import org.spongepowered.api.text.Text;
 
 import java.time.OffsetDateTime;
@@ -59,12 +59,13 @@ public class PlaceholderTest {
         this.pluginContainer = pluginContainer;
     }
 
+    // Plugins providing placeholders will do this
     @Listener
     public void onRegistration(GameRegistryEvent.Register<PlaceholderParser> event) {
         event.register(new PlaceholderParser() {
             @Override
-            public Text parse(PlaceholderText placeholderText) {
-                if (placeholderText.getArgumentString().map(x -> x.equalsIgnoreCase("UTC")).isPresent()) {
+            public Text parse(PlaceholderContext placeholderContext) {
+                if (placeholderContext.getArgumentString().map(x -> x.equalsIgnoreCase("UTC")).isPresent()) {
                     return Text.of(OffsetDateTime.now(ZoneOffset.UTC).format(FORMATTER));
                 }
                 return Text.of(OffsetDateTime.now().format(FORMATTER));
@@ -92,30 +93,15 @@ public class PlaceholderTest {
                             GenericArguments.optional(GenericArguments.remainingRawJoinedStrings(this.argumentStringKey))
                     )
                     .executor((source, context) -> {
+                        // Plugins using placeholders will do this
                         final PlaceholderParser parser = context.requireOne(this.placeholderKey);
                         final Optional<String> args = context.getOne(this.argumentStringKey);
-                        final PlaceholderService placeholderService = Sponge.getServiceManager().provideUnchecked(PlaceholderService.class);
 
-                        // test via the service
-                        final PlaceholderText serviceText;
-                        if (args.isPresent()) {
-                            serviceText = placeholderService
-                                    .parse(parser.getId(), args.get(), source)
-                                    .orElseThrow(() -> new CommandException(Text.of("Could not parse for ", parser.getId())));
-                        } else {
-                            serviceText = placeholderService
-                                    .parse(parser.getId(), source)
-                                    .orElseThrow(() -> new CommandException(Text.of("Could not parse for ", parser.getId())));
-                        }
-
-                        // And get it via the builder on the service.
-                        final PlaceholderText.Builder builder =
-                                placeholderService.placeholderBuilder().setAssociatedObject(source).setParser(parser);
+                        final PlaceholderContext.Builder builder = PlaceholderContext.builder().setAssociatedObject(source);
                         args.ifPresent(builder::setArgumentString);
-                        final PlaceholderText builderText = builder.build();
+                        final PlaceholderText builderText = PlaceholderText.builder().setContext(builder.build()).setParser(parser).build();
 
-                        source.sendMessage(Text.of("Via Service: ", serviceText));
-                        source.sendMessage(Text.of("Via Builder: ", builderText));
+                        source.sendMessage(Text.of("Result: ", builderText));
                         return CommandResult.success();
                     }).build(),
                 "placeholder"

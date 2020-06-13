@@ -22,14 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.service.placeholder;
+package org.spongepowered.common.text.placeholder;
 
 import com.google.common.base.Preconditions;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.placeholder.PlaceholderParser;
-import org.spongepowered.api.service.placeholder.PlaceholderText;
+import org.spongepowered.api.text.placeholder.PlaceholderContext;
 import org.spongepowered.api.world.World;
 import org.spongepowered.common.SpongeImpl;
 
@@ -39,21 +38,14 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-public class SpongePlaceholderTextBuilder implements PlaceholderText.Builder {
+public class SpongePlaceholderContextBuilder implements PlaceholderContext.Builder {
 
-    @Nullable private PlaceholderParser parser;
     @Nullable private Supplier<Object> associatedObjectSupplier;
     @Nullable private String argument = null;
 
     @Override
-    public PlaceholderText.Builder setParser(PlaceholderParser parser) {
-        this.parser = Preconditions.checkNotNull(parser, "parser cannot be null");
-        return this;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
-    public PlaceholderText.Builder setAssociatedObject(@Nullable Object associatedObject) {
+    public PlaceholderContext.Builder setAssociatedObject(@Nullable Object associatedObject) {
         if (associatedObject == null) {
             this.associatedObjectSupplier = null;
         } else if (associatedObject instanceof Supplier) {
@@ -80,39 +72,35 @@ public class SpongePlaceholderTextBuilder implements PlaceholderText.Builder {
     }
 
     @Override
-    public PlaceholderText.Builder setAssociatedObject(@Nullable Supplier<Object> associatedObjectSupplier) {
+    public PlaceholderContext.Builder setAssociatedObject(@Nullable Supplier<Object> associatedObjectSupplier) {
         this.associatedObjectSupplier = associatedObjectSupplier;
         return this;
     }
 
     @Override
-    public PlaceholderText.Builder setArgumentString(@Nullable String argument) {
+    public PlaceholderContext.Builder setArgumentString(@Nullable String argument) {
         this.argument = argument == null || argument.isEmpty() ? null : argument;
         return this;
     }
 
+
     @Override
-    public PlaceholderText build() throws IllegalStateException {
-        if (this.parser == null) {
-            throw new IllegalStateException("parser cannot be null");
-        }
-        return new SpongePlaceholderText(this.parser, this.associatedObjectSupplier, this.argument);
+    public PlaceholderContext build() throws IllegalStateException {
+        return new SpongePlaceholderContext(this.associatedObjectSupplier, this.argument);
     }
 
     @Override
-    public PlaceholderText.Builder from(PlaceholderText value) {
-        Preconditions.checkArgument(value instanceof SpongePlaceholderText, "Must supply a SpongePlaceholderText");
-        this.parser = value.getParser();
-        this.associatedObjectSupplier = ((SpongePlaceholderText) value).associatedObjectSupplier;
+    public PlaceholderContext.Builder from(PlaceholderContext value) {
+        Preconditions.checkArgument(value instanceof SpongePlaceholderContext, "Must be a SpongePlaceholderContext");
         this.argument = value.getArgumentString().orElse(null);
+        this.associatedObjectSupplier = ((SpongePlaceholderContext) value).getAssociatedObjectSupplier();
         return this;
     }
 
     @Override
-    public PlaceholderText.Builder reset() {
-        this.argument = null;
-        this.parser = null;
+    public PlaceholderContext.Builder reset() {
         this.associatedObjectSupplier = null;
+        this.argument = null;
         return this;
     }
 

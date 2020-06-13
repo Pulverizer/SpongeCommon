@@ -22,29 +22,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.service.placeholder;
+package org.spongepowered.common.text.placeholder;
 
 import com.google.common.base.Preconditions;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.service.placeholder.PlaceholderParser;
-import org.spongepowered.api.service.placeholder.PlaceholderText;
+import org.spongepowered.api.text.placeholder.PlaceholderContext;
+import org.spongepowered.api.text.placeholder.PlaceholderParser;
+import org.spongepowered.api.text.placeholder.PlaceholderText;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.common.SpongeImpl;
 
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
 public class SpongePlaceholderParserBuilder implements PlaceholderParser.Builder {
 
-    private static final Pattern INVALID_ID_CHARACTERS = Pattern.compile("[:\\s]");
-
     @Nullable private PluginContainer pluginContainer;
     @Nullable private String id;
     @Nullable private String name;
-    @Nullable private Function<PlaceholderText, Text> parser;
+    @Nullable private Function<PlaceholderContext, Text> parser;
 
     @Override
     public PlaceholderParser.Builder plugin(Object plugin) {
@@ -66,7 +64,7 @@ public class SpongePlaceholderParserBuilder implements PlaceholderParser.Builder
     }
 
     @Override
-    public PlaceholderParser.Builder parser(Function<PlaceholderText, Text> parser) {
+    public PlaceholderParser.Builder parser(Function<PlaceholderContext, Text> parser) {
         this.parser = parser;
         return this;
     }

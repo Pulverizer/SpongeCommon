@@ -22,54 +22,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.service.placeholder;
+package org.spongepowered.common.text.placeholder;
 
-import org.spongepowered.api.service.placeholder.PlaceholderParser;
-import org.spongepowered.api.service.placeholder.PlaceholderText;
+import org.spongepowered.api.text.placeholder.PlaceholderContext;
+import org.spongepowered.api.text.placeholder.PlaceholderParser;
+import org.spongepowered.api.text.placeholder.PlaceholderText;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageReceiver;
 
-import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
-import javax.annotation.Nullable;
+public class SpongePlaceholderParser implements PlaceholderParser {
 
-public class SpongePlaceholderText implements PlaceholderText {
+    private final String id;
+    private final String name;
+    private final Function<PlaceholderContext, Text> function;
 
-    private final PlaceholderParser parser;
-    @Nullable final Supplier<Object> associatedObjectSupplier;
-    @Nullable private final String argument;
-
-    public SpongePlaceholderText(PlaceholderParser parser,
-            @Nullable Supplier<Object> associatedReceiverSupplier,
-            @Nullable String argument) {
-        this.parser = parser;
-        this.associatedObjectSupplier = associatedReceiverSupplier;
-        this.argument = argument;
+    public SpongePlaceholderParser(String id, String name, Function<PlaceholderContext, Text> function) {
+        this.id = id;
+        this.name = name;
+        this.function = function;
     }
 
     @Override
-    public PlaceholderParser getParser() {
-        return this.parser;
+    public Text parse(PlaceholderContext placeholderContext) {
+        return this.function.apply(placeholderContext);
     }
 
     @Override
-    public Optional<Object> getAssociatedObject() {
-        if (this.associatedObjectSupplier == null) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(this.associatedObjectSupplier.get());
+    public String getId() {
+        return this.id;
     }
 
     @Override
-    public Optional<String> getArgumentString() {
-        return Optional.ofNullable(this.argument);
+    public String getName() {
+        return this.name;
     }
 
-    @Override
-    public Text toText() {
-        return this.parser.parse(this);
+    Function<PlaceholderContext, Text> getParser() {
+        return this.function;
     }
-
 }

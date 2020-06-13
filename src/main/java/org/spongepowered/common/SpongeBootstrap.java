@@ -33,7 +33,6 @@ import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.service.permission.PermissionService;
-import org.spongepowered.api.service.placeholder.PlaceholderService;
 import org.spongepowered.api.service.rcon.RconService;
 import org.spongepowered.api.service.sql.SqlService;
 import org.spongepowered.api.service.user.UserStorageService;
@@ -42,7 +41,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.common.command.SpongeCommandFactory;
 import org.spongepowered.common.service.ban.SpongeBanService;
 import org.spongepowered.common.service.pagination.SpongePaginationService;
-import org.spongepowered.common.service.placeholder.SpongePlaceholderService;
 import org.spongepowered.common.service.rcon.MinecraftRconService;
 import org.spongepowered.common.service.sql.SqlServiceImpl;
 import org.spongepowered.common.service.user.SpongeUserStorageService;
@@ -68,7 +66,6 @@ public final class SpongeBootstrap {
         registerService(UserStorageService.class, new SpongeUserStorageService());
         registerService(BanService.class, new SpongeBanService());
         registerService(WhitelistService.class, new SpongeWhitelistService());
-        registerService(PlaceholderService.class, new SpongePlaceholderService());
         SpongeInternalListeners.getInstance().registerServiceCallback(PermissionService.class, input -> {
             if (Sponge.isServerAvailable()) {
                 Sponge.getServer().getConsole().getContainingCollection();

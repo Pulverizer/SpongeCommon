@@ -22,42 +22,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.service.placeholder;
+package org.spongepowered.common.text.placeholder;
 
-import org.spongepowered.api.service.placeholder.PlaceholderParser;
-import org.spongepowered.api.service.placeholder.PlaceholderText;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.placeholder.PlaceholderContext;
 
-import java.util.function.Function;
+import java.util.Optional;
+import java.util.function.Supplier;
 
-public class SpongePlaceholderParser implements PlaceholderParser {
+import javax.annotation.Nullable;
 
-    private final String id;
-    private final String name;
-    private final Function<PlaceholderText, Text> function;
+public class SpongePlaceholderContext implements PlaceholderContext {
 
-    public SpongePlaceholderParser(String id, String name, Function<PlaceholderText, Text> function) {
-        this.id = id;
-        this.name = name;
-        this.function = function;
+    @Nullable final Supplier<Object> associatedObjectSupplier;
+    @Nullable private final String argument;
+
+    public SpongePlaceholderContext(@Nullable Supplier<Object> associatedObjectSupplier, @Nullable String argument) {
+        this.associatedObjectSupplier = associatedObjectSupplier;
+        this.argument = argument;
     }
 
     @Override
-    public Text parse(PlaceholderText placeholderText) {
-        return this.function.apply(placeholderText);
+    public Optional<Object> getAssociatedObject() {
+        if (this.associatedObjectSupplier == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(this.associatedObjectSupplier.get());
     }
 
     @Override
-    public String getId() {
-        return this.id;
+    public Optional<String> getArgumentString() {
+        return Optional.ofNullable(this.argument);
     }
 
-    @Override
-    public String getName() {
-        return this.name;
+    @Nullable
+    Supplier<Object> getAssociatedObjectSupplier() {
+        return this.associatedObjectSupplier;
     }
 
-    Function<PlaceholderText, Text> getParser() {
-        return this.function;
-    }
 }

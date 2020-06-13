@@ -22,5 +22,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@org.spongepowered.api.util.annotation.NonnullByDefault
-package org.spongepowered.common.service.placeholder;
+package org.spongepowered.common.text.placeholder;
+
+import org.spongepowered.api.text.placeholder.PlaceholderContext;
+import org.spongepowered.api.text.placeholder.PlaceholderParser;
+import org.spongepowered.api.text.placeholder.PlaceholderText;
+import org.spongepowered.api.text.Text;
+
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
+
+public class SpongePlaceholderText implements PlaceholderText {
+
+    private final PlaceholderParser parser;
+    private final PlaceholderContext context;
+
+    public SpongePlaceholderText(PlaceholderParser parser, PlaceholderContext context) {
+        this.parser = parser;
+        this.context = context;
+    }
+
+    @Override
+    public PlaceholderContext getContext() {
+        return this.context;
+    }
+
+    @Override
+    public PlaceholderParser getParser() {
+        return this.parser;
+    }
+
+    @Override
+    public Text toText() {
+        return this.parser.parse(this.context);
+    }
+
+}

@@ -103,14 +103,15 @@ import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayMode;
 import org.spongepowered.api.service.economy.account.AccountDeletionResultType;
 import org.spongepowered.api.service.economy.transaction.TransactionType;
-import org.spongepowered.api.service.placeholder.PlaceholderParser;
-import org.spongepowered.api.service.placeholder.PlaceholderText;
+import org.spongepowered.api.text.placeholder.PlaceholderContext;
+import org.spongepowered.api.text.placeholder.PlaceholderParser;
 import org.spongepowered.api.statistic.Statistic;
 import org.spongepowered.api.statistic.StatisticType;
 import org.spongepowered.api.text.chat.ChatType;
 import org.spongepowered.api.text.chat.ChatVisibility;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextStyle;
+import org.spongepowered.api.text.placeholder.PlaceholderText;
 import org.spongepowered.api.text.selector.SelectorType;
 import org.spongepowered.api.text.serializer.TextSerializer;
 import org.spongepowered.api.util.ban.Ban;
@@ -185,7 +186,7 @@ import org.spongepowered.common.registry.type.event.*;
 import org.spongepowered.common.registry.type.extra.FluidTypeRegistryModule;
 import org.spongepowered.common.registry.type.item.*;
 import org.spongepowered.common.registry.type.scoreboard.*;
-import org.spongepowered.common.registry.type.service.placeholder.PlaceholderParserRegistryModule;
+import org.spongepowered.common.registry.type.text.PlaceholderParserRegistryModule;
 import org.spongepowered.common.registry.type.statistic.StatisticRegistryModule;
 import org.spongepowered.common.registry.type.statistic.StatisticTypeRegistryModule;
 import org.spongepowered.common.registry.type.text.*;
@@ -195,7 +196,9 @@ import org.spongepowered.common.registry.type.world.gen.*;
 import org.spongepowered.common.scoreboard.builder.SpongeObjectiveBuilder;
 import org.spongepowered.common.scoreboard.builder.SpongeScoreboardBuilder;
 import org.spongepowered.common.scoreboard.builder.SpongeTeamBuilder;
-import org.spongepowered.common.service.placeholder.SpongePlaceholderParserBuilder;
+import org.spongepowered.common.text.placeholder.SpongePlaceholderContextBuilder;
+import org.spongepowered.common.text.placeholder.SpongePlaceholderParserBuilder;
+import org.spongepowered.common.text.placeholder.SpongePlaceholderTextBuilder;
 import org.spongepowered.common.world.SpongeExplosionBuilder;
 import org.spongepowered.common.world.SpongeLocatableBlockBuilder;
 import org.spongepowered.common.world.SpongeWorldArchetypeBuilder;
@@ -332,6 +335,8 @@ public final class CommonModuleRegistry {
                 .registerBuilderSupplier(FilteredTrigger.Builder.class, SpongeFilteredTriggerBuilder::new)
                 .registerBuilderSupplier(Trigger.Builder.class, SpongeTriggerBuilder::new)
                 .registerBuilderSupplier(PlaceholderParser.Builder.class, SpongePlaceholderParserBuilder::new)
+                .registerBuilderSupplier(PlaceholderText.Builder.class, SpongePlaceholderTextBuilder::new)
+                .registerBuilderSupplier(PlaceholderContext.Builder.class, SpongePlaceholderContextBuilder::new)
         ;
     }
 

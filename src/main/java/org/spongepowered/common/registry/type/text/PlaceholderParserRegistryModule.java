@@ -22,19 +22,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.registry.type.service.placeholder;
+package org.spongepowered.common.registry.type.text;
 
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.registry.util.RegisterCatalog;
-import org.spongepowered.api.service.placeholder.PlaceholderParser;
-import org.spongepowered.api.service.placeholder.PlaceholderParsers;
+import org.spongepowered.api.text.placeholder.PlaceholderParser;
+import org.spongepowered.api.text.placeholder.PlaceholderParsers;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Locatable;
 import org.spongepowered.common.SpongeImpl;
 import org.spongepowered.common.registry.SpongeAdditionalCatalogRegistryModule;
 import org.spongepowered.common.registry.type.AbstractPrefixAlternateCatalogTypeRegistryModule;
-import org.spongepowered.common.service.placeholder.SpongePlaceholderParserBuilder;
+import org.spongepowered.common.text.placeholder.SpongePlaceholderParserBuilder;
 
 @RegisterCatalog(PlaceholderParsers.class)
 public class PlaceholderParserRegistryModule
